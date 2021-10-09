@@ -1,0 +1,45 @@
+<script type="text/javascript">
+    RED.nodes.registerType('smooth',{
+        category: 'cistern',
+        color: '#a6bbcf',
+        defaults: {
+            name                   : { value: ""},
+            numberOfSamples        : { value: 5, required: true, validate:function(v) 
+                {
+                    var isInteger = v % 1 === 0;
+                    return isInteger && v > 1;
+                } 
+            }
+        },
+        inputs:1,
+        outputs:1,
+        icon: "function.svg",
+        label: function() {
+            return this.name||"smooth";
+        },
+        oneditprepare: function()
+        {
+            $("#node-input-numberOfSamples").typedInput({
+                type:"num",
+                types:["num"],
+                typeField: "#node-input-numberOfSamples-type"
+            })
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="smooth">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-numberOfSamples"><i class="fa fa-tag"></i> Number of samples (int)</label>
+        <input type="text" id="node-input-numberOfSamples">
+        <input type="hidden" id="node-input-numberOfSamples-type">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="smooth">
+    <p>Fetches a number of value samples, detects and removes outliers (1.5 times the 'interquartileRange', and returns the mean value of the remaining samples</p>
+</script>

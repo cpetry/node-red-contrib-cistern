@@ -1,18 +1,24 @@
 var simpleStatistics = require("simple-statistics");
 
 module.exports = function(RED) {
-    function MeasureValueSmooth(config) {
+    function smooth(config) {
         RED.nodes.createNode(this,config);
         this.numberOfSamples = config.numberOfSamples;
-        this.valueRangeInPercentage = config.valueRangeInPercentage;
         var node = this;
+
+        this.on('close', function() {
+            var context = node.context();
+            context.set('valueArray',new Array(0));
+        });
+
         node.on('input', function(msg) {
-            var distance = parseFloat(msg.payload);
-            if (distance == NaN){
-                node.status({fill:"red",shape:"ring", text: "msg.payload is not a number!"});
-                return;
-            }
             
+            var hasValidInput = node.checkInput(msg);
+            if (!hasValidInput)
+                return;
+
+            var distance = parseFloat(msg.payload);
+
             var valueArray = node.getContextArray();
             valueArray.push(distance);
             
@@ -21,18 +27,44 @@ module.exports = function(RED) {
                 var filteredArray = node.removeOutliers(valueArray);
                 if (filteredArray.length == 0)
                 {
-                    node.status({fill:"red",shape:"ring", text: "error filtering outliers"});
+                    node.setError("Error filtering outliers. No value left!");
                     return;
                 }
-                msg.payload = simpleStatistics.mean(filteredArray);
+                var value = simpleStatistics.mean(filteredArray);
+                node.log("Output mean value: " + value);
+                msg.payload = value;
                 node.send(msg);
-                valueArray = new Array();
+                valueArray = new Array(0);
             }
             node.setContextArray(valueArray);
 
             var outputText = valueArray.join(',');
             node.status({fill:"green",shape:"ring", text: valueArray.length});
         });
+
+        node.checkInput = function(msg)
+        {
+            if (msg == null || !msg.hasOwnProperty("payload"))
+            {
+                node.setError("msg.payload invalid or does not exist!");
+                return false;
+            }
+
+            var distance = parseFloat(msg.payload);
+            if (distance == NaN)
+            {
+                node.setError("msg.payload is not a number!");
+                return false;
+            }
+
+            return true;
+        };
+
+        node.setError = function(textMessage)
+        {
+            node.status({fill:"red",shape:"ring", text: textMessage});
+            node.warn(textMessage);
+        };
 
         node.getContextArray = function()
         {
@@ -61,5 +93,5 @@ module.exports = function(RED) {
             return filteredArray;
         }
     }
-    RED.nodes.registerType("measureValueSmooth",MeasureValueSmooth);
+    RED.nodes.registerType("smooth",smooth);
 }

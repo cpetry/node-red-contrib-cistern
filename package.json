@@ -1,0 +1,22 @@
+{
+    "name": "node-red-contrib-cistern",
+    "version": "0.0.1",
+    "description": "A collection of node-red nodes for cisterns.",
+    "dependencies": {
+    },
+    "keywords": [
+        "node-red",
+        "cistern"
+    ],
+    "scripts": {
+        "test": "mocha \"test/**/*_spec.js\""
+    },
+    "node-red": {
+        "nodes": {
+            "smooth": "smooth.js"
+        },
+        "dependencies": [
+            "node-red-contrib-statistics"
+        ]
+    }
+}
