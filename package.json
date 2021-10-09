@@ -2,6 +2,10 @@
     "name": "node-red-contrib-cistern",
     "version": "1.0.0",
     "author": "cpetry",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/cpetry/node-red-contrib-cistern.git"
+    },
     "description": "A collection of node-red nodes for cisterns.",
     "dependencies": {
         "node-red-contrib-statistics": "2.2.2"
