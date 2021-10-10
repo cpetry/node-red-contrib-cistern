@@ -1,0 +1,79 @@
+<script type="text/javascript">
+    RED.nodes.registerType('outlier',{
+        category: 'cistern',
+        color: '#a6bbcf',
+        defaults: {
+            name                   : { value: ""},
+            mode_input             : { value: "batch_number", required: true },
+            numberOfSamples        : { value: 10, required: true, validate:function(v) 
+                {
+                    var isInteger = v % 1 === 0;
+                    return isInteger && v > 1;
+                } 
+            },
+            mode_outliers          : { value: "remove", required: true},
+        },
+        inputs:1,
+        outputs:1,
+        icon: "function.svg",
+        label: function() {
+            return this.name||"outlier";
+        },
+        oneditprepare: function()
+        {
+            $("#node-input-numberOfSamples").typedInput({
+                type:"num",
+                types:["num"],
+                typeField: "#node-input-numberOfSamples-type"
+            });
+            $("#node-input-mode_input").typedInput({
+                types: [
+                    {
+                        value: "Input type",
+                        options: [
+                            { value: "batch_number", label: "Batch - number"},
+                            //{ value: "batch_time", label: "Batch - time"},
+                            { value: "array", label: "Array"},
+                        ]
+                    }
+                ]
+            })
+            $("#node-input-mode_outlier").typedInput({
+                types: [
+                    {
+                        value: "Input type",
+                        options: [
+                            { value: "remove", label: "Remove"},
+                            { value: "get", label: "Get"},
+                        ]
+                    }
+                ]
+            })
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="outlier">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-mode_input"><i class="fa fa-tag"></i> Input</label>
+        <input type="text" id="node-input-mode_input">
+    </div>
+    <div class="form-row">
+        <label for="node-input-numberOfSamples"><i class="fa fa-tag"></i> Number of samples (int)</label>
+        <input type="text" id="node-input-numberOfSamples">
+        <input type="hidden" id="node-input-numberOfSamples-type">
+    </div>
+    <div class="form-row">
+        <label for="node-input-mode_outlier"><i class="fa fa-tag"></i> Outliers</label>
+        <input type="text" id="node-input-mode_outlier">
+    </div>
+    
+</script>
+
+<script type="text/html" data-help-name="outlier">
+    <p>Fetches a number of value samples, detects and removes outliers (1.5 times the 'interquartileRange', and returns the mean value of the remaining samples</p>
+</script>

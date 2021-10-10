@@ -1,10 +1,10 @@
 var should = require("should");
 var helper = require("node-red-node-test-helper");
-var smooth = require("../smooth.js");
+var outlier = require("../outlier.js");
 
 helper.init(require.resolve('node-red'));
 
-describe('smooth Node', function () {
+describe('outlier Node', function () {
   
     beforeEach(function (done) {
         helper.startServer(done);
@@ -17,8 +17,8 @@ describe('smooth Node', function () {
   
 
   it('should be loaded', function (done) {
-    var flow = [{ id: "n1", type: "smooth", name: "test name" }];
-    helper.load(smooth, flow, function () {
+    var flow = [{ id: "n1", type: "outlier", name: "test name" }];
+    helper.load(outlier, flow, function () {
       var n1 = helper.getNode("n1");
       try {
         n1.should.have.property('name', 'test name');
@@ -31,10 +31,10 @@ describe('smooth Node', function () {
 
   it('should show error when input is null', function (done) {
     var flow = [
-       { id: "n1", type: "smooth", numberOfSamples: "5", wires:[["result"]] },
+       { id: "n1", type: "outlier", numberOfSamples: "5", mode_input: "batch_number", mode_outlier: "remove", wires:[["result"]] },
        { id: "result", type: "helper",  },
     ];
-    helper.load(smooth, flow, function () {
+    helper.load(outlier, flow, function () {
 
         var resultNode = helper.getNode("result");
         var n1 = helper.getNode("n1");
@@ -47,40 +47,40 @@ describe('smooth Node', function () {
 
   it('should show error when input is has no payload', function (done) {
     var flow = [
-       { id: "n1", type: "smooth", numberOfSamples: "5", wires:[["result"]] },
+       { id: "n1", type: "outlier", numberOfSamples: "5", mode_input: "batch_number", mode_outlier: "remove", wires:[["result"]] },
        { id: "result", type: "helper",  },
     ];
-    helper.load(smooth, flow, function () {
+    helper.load(outlier, flow, function () {
 
         var resultNode = helper.getNode("result");
         var n1 = helper.getNode("n1");
         n1.receive({ something: "input"});
-        n1.warn.should.be.called;
+        n1.warn.should.be.called();
         done();
     });
   });
 
   it('should show error when input is not a number', function (done) {
     var flow = [
-       { id: "n1", type: "smooth", numberOfSamples: "5", wires:[["result"]] },
+       { id: "n1", type: "outlier", numberOfSamples: "5", mode_input: "batch_number", mode_outlier: "remove", wires:[["result"]] },
        { id: "result", type: "helper",  },
     ];
-    helper.load(smooth, flow, function () {
+    helper.load(outlier, flow, function () {
 
         var resultNode = helper.getNode("result");
         var n1 = helper.getNode("n1");
         n1.receive({ payload: "Something" });
-        n1.warn.should.be.called;
+        n1.warn.should.be.called();
         done();
     });
   });
   
   it('should get nothing when receive is below numberOfSamples', function (done) {
     var flow = [
-       { id: "n1", type: "smooth", numberOfSamples: "5", wires:[["result"]] },
+       { id: "n1", type: "outlier", numberOfSamples: "5", mode_input: "batch_number", mode_outlier: "remove", wires:[["result"]] },
        { id: "result", type: "helper",  },
     ];
-    helper.load(smooth, flow, function () {
+    helper.load(outlier, flow, function () {
 
         var resultNode = helper.getNode("result");
         var n1 = helper.getNode("n1");
@@ -89,6 +89,7 @@ describe('smooth Node', function () {
         n1.receive({ payload: "3" });
         n1.receive({ payload: "4" });
         resultNode.should.not.have.called("input");
+        n1.warn.should.not.be.called();
         done();
     });
   });
@@ -96,10 +97,10 @@ describe('smooth Node', function () {
 
   it('should clear array when numberOfSamples reached', function (done) {
     var flow = [
-       { id: "n1", type: "smooth", numberOfSamples: "5", wires:[["result"]] },
+       { id: "n1", type: "outlier", numberOfSamples: "5", mode_input: "batch_number", mode_outlier: "remove", wires:[["result"]] },
        { id: "result", type: "helper",  },
     ];
-    helper.load(smooth, flow, function () {
+    helper.load(outlier, flow, function () {
 
         var resultNode = helper.getNode("result");
         var n1 = helper.getNode("n1");
@@ -110,17 +111,19 @@ describe('smooth Node', function () {
         n1.receive({ payload: "3" });
         n1.receive({ payload: "4" });
         n1.receive({ payload: "5" });
-        if(n1.getContextArray().length == 0)
-          done();
+        var valueArray = n1.context().get('valueArray');
+        if(valueArray.length != 0)
+          done(error);
+        done();
     });
   });
 
   it('should get mean of array', function (done) {
     var flow = [
-       { id: "n1", type: "smooth", numberOfSamples: "8", wires:[["result"]] },
+       { id: "n1", type: "outlier", numberOfSamples: "8", mode_input: "batch_number", mode_outlier: "remove", wires:[["result"]] },
        { id: "result", type: "helper",  },
     ];
-    helper.load(smooth, flow, function () {
+    helper.load(outlier, flow, function () {
 
         var resultNode = helper.getNode("result");
         resultNode.on("input", function (msg) {
@@ -141,6 +144,7 @@ describe('smooth Node', function () {
         n1.receive({ payload: "5" });
         n1.receive({ payload: "8" });
         n1.receive({ payload: "6" });
+        n1.warn.should.not.be.called();
     });
   });
 });

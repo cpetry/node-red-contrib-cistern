@@ -2,3 +2,4 @@ node_modules/
 *.bat
 *.txt
 package-lock.json
+.npmrc
