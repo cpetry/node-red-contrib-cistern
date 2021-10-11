@@ -5,7 +5,8 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,config);
         this.numberOfSamples = config.numberOfSamples;
         this.mode_input = config.mode_input;
-        this.mode_outliers = config.mode_outliers;
+        this.mode_outlier = config.mode_outlier;
+        this.mode_output = config.mode_output;
         var node = this;
 
         this.on('close', function() {
@@ -24,42 +25,35 @@ module.exports = function(RED) {
             
             if (node.mode_input == "array" || valueArray.length >= node.numberOfSamples)
             {
-                var filteredArray = node.filterOutliers(valueArray, node.mode_outliers);
+                var filteredArray = node.filterOutliers(valueArray, node.mode_outlier);
                 if (filteredArray.length == 0)
                 {
                     node.setError("Error filtering outliers. No value left!");
                     return;
                 }
-                var value = simpleStatistics.mean(filteredArray);
-                node.log("Output mean value: " + value);
-                msg.payload = value;
-                node.send(msg);
+                node.setOutput(msg, filteredArray, node.mode_output);
                 valueArray = new Array(0);
             }
 
             if (node.mode_input == "batch_number")
                 node.setContextArray(valueArray);
 
-            var outputText = ""
-            if (node.mode_input == "batch_number")
-            {
-                outputText = valueArray.length + "/" + node.numberOfSamples;
-                if (valueArray.length == 0)
-                    outputText = "Mean: " + msg.payload;
-            }
-            else if(node.mode_input == "array")
-                outputText = "";
-
-            node.status({fill:"green",shape:"ring", text: outputText});
+            node.setStatus(msg, valueArray);
         });
 
         node.checkInputArray = function(msg)
         {
-            if (Array.isArray(msg.payload))
+            if (!Array.isArray(msg.payload))
             {
                 node.setError("msg.payload should be an array!");
-                return true;
+                return false;
             }
+            else if(msg.payload.length == 0)
+            {
+                node.setError("msg.payload array is empty!");
+                return false;
+            }
+            return true;
         }
 
         node.checkInputBatch = function(msg)
@@ -139,14 +133,12 @@ module.exports = function(RED) {
             var thirdQuartile = simpleStatistics.quantile(valueArray, 0.75);
             if (mode == "remove")
             {
-                var filteredArray = valueArray.filter(x => x < thirdQuartile + maxAllowedDistance);
-                filteredArray = filteredArray.filter(x => x > firstQuartile - maxAllowedDistance);
+                var filteredArray = valueArray.filter(x => (x < thirdQuartile + maxAllowedDistance) && (x > firstQuartile - maxAllowedDistance));
                 return filteredArray;
             }
             else if (mode == "get")
             {
-                var filteredArray = valueArray.filter(x => x > thirdQuartile + maxAllowedDistance);
-                filteredArray = filteredArray.filter(x => x < firstQuartile - maxAllowedDistance);
+                var filteredArray = valueArray.filter(x => (x > thirdQuartile + maxAllowedDistance) || (x < firstQuartile - maxAllowedDistance));
                 return filteredArray;
             }
             else
@@ -154,6 +146,36 @@ module.exports = function(RED) {
                 node.setError("invalid outlier mode " +  mode + "!");
                 return valueArray;
             }
+        }
+
+        node.setOutput = function(msg, valueArray, mode)
+        {
+            if (mode == "mean"){
+                var value = simpleStatistics.mean(valueArray);
+                msg.payload = value;
+            }
+            else if (mode == "array"){
+                msg.payload = valueArray;
+            }
+            node.send(msg);
+        }
+
+        node.setStatus = function(msg, valueArray)
+        {
+            var outputText = ""
+            if (node.mode_input == "batch_number"){
+                outputText = valueArray.length + "/" + node.numberOfSamples;
+                if (valueArray.length == 0){
+                    if (node.mode_output == "mean")
+                        outputText = "Mean: " + msg.payload;
+                    else if (node.mode_output == "array")
+                        outputText = "Output length: " + msg.payload.length;
+                }
+            }
+            else if(node.mode_input == "array")
+                outputText = "Output length: " + msg.payload.length;
+
+            node.status({fill:"green",shape:"ring", text: outputText});
         }
     }
     RED.nodes.registerType("outlier",outlier);

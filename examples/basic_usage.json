@@ -1,0 +1,186 @@
+[
+    {
+        "id": "7c2895ba22b1d64e",
+        "type": "tab",
+        "label": "Example flow",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "8cdc550103f81e17",
+        "type": "outlier",
+        "z": "7c2895ba22b1d64e",
+        "name": "Remove outlier",
+        "mode_input": "array",
+        "numberOfSamples": 10,
+        "mode_outlier": "remove",
+        "mode_output": "mean",
+        "x": 380,
+        "y": 100,
+        "wires": [
+            [
+                "a2e0fd48793f22e3"
+            ]
+        ]
+    },
+    {
+        "id": "08638f0cb7ea88a4",
+        "type": "inject",
+        "z": "7c2895ba22b1d64e",
+        "name": "Input - Array",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "[1,2,3,4,5,6,7,8, 55, -66]",
+        "payloadType": "jsonata",
+        "x": 110,
+        "y": 100,
+        "wires": [
+            [
+                "8cdc550103f81e17"
+            ]
+        ]
+    },
+    {
+        "id": "a2e0fd48793f22e3",
+        "type": "debug",
+        "z": "7c2895ba22b1d64e",
+        "name": "Output mode: Mean",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 620,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "480b8a22d22e6a87",
+        "type": "outlier",
+        "z": "7c2895ba22b1d64e",
+        "name": "Remove outlier",
+        "mode_input": "batch_number",
+        "numberOfSamples": 10,
+        "mode_outlier": "remove",
+        "mode_output": "mean",
+        "x": 380,
+        "y": 240,
+        "wires": [
+            [
+                "dad37ead76868b49"
+            ]
+        ]
+    },
+    {
+        "id": "5f9e73cf46c09b25",
+        "type": "inject",
+        "z": "7c2895ba22b1d64e",
+        "name": "Input - random number",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "$random() * 55",
+        "payloadType": "jsonata",
+        "x": 140,
+        "y": 240,
+        "wires": [
+            [
+                "480b8a22d22e6a87"
+            ]
+        ]
+    },
+    {
+        "id": "dad37ead76868b49",
+        "type": "debug",
+        "z": "7c2895ba22b1d64e",
+        "name": "Output mode: Array",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 620,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "117f9824a61019b7",
+        "type": "outlier",
+        "z": "7c2895ba22b1d64e",
+        "name": "Get outlier",
+        "mode_input": "array",
+        "numberOfSamples": 10,
+        "mode_outlier": "get",
+        "mode_output": "array",
+        "x": 370,
+        "y": 360,
+        "wires": [
+            [
+                "1f36854cf459fdb8"
+            ]
+        ]
+    },
+    {
+        "id": "1f36854cf459fdb8",
+        "type": "debug",
+        "z": "7c2895ba22b1d64e",
+        "name": "Output mode: Array",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 620,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "2970e13e19082f11",
+        "type": "inject",
+        "z": "7c2895ba22b1d64e",
+        "name": "Input - Array",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "[1,2,3,4,5,6,7,8, 55, -66]",
+        "payloadType": "jsonata",
+        "x": 110,
+        "y": 360,
+        "wires": [
+            [
+                "117f9824a61019b7"
+            ]
+        ]
+    }
+]
