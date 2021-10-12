@@ -97,7 +97,7 @@ describe('cistern Node', function () {
 
   it('should show error when maxDistance less or equal then minDistance is not a number', function (done) {
     var flow = [
-       { id: "n1", type: "cistern", radius: "3", maxDistance: "1", minDistance: "1", unit_input: "m", wires:[["result"]] },
+       { id: "n1", type: "cistern", radius: "1", maxDistance: "1", minDistance: "1", unit_input: "m", wires:[["result"]] },
     ];
     helper.load(cistern, flow, function () {
 
@@ -110,12 +110,12 @@ describe('cistern Node', function () {
 
   it('should show warning if radius is bigger than maxDistance', function (done) {
     var flow = [
-       { id: "n1", type: "cistern", radius: "3", maxDistance: "2", minDistance: "1", unit_input: "m", wires:[["result"]] },
+       { id: "n1", type: "cistern", radius: "1", maxDistance: "3.2", minDistance: "1", unit_input: "m", wires:[["result"]] },
     ];
     helper.load(cistern, flow, function () {
 
         var n1 = helper.getNode("n1");
-        n1.receive({ payload: "2.5" });
+        n1.receive({ payload: "3.5" });
         n1.warn.should.be.called();
         done();
     });
@@ -123,7 +123,7 @@ describe('cistern Node', function () {
 
   it('should return correct liters', function (done) {
     var flow = [
-       { id: "n1", type: "cistern", radius: "3", maxDistance: "4", minDistance: "1", unit_input: "m", wires:[["resultLiter"]] },
+       { id: "n1", type: "cistern", radius: "1.35", maxDistance: "3.2", minDistance: "1", unit_input: "m", wires:[["resultLiter"]] },
        { id: "resultLiter", type: "helper",  },
     ];
     helper.load(cistern, flow, function () {
@@ -131,7 +131,7 @@ describe('cistern Node', function () {
         var result = helper.getNode("resultLiter");
         result.on("input", function (msg) {
             try {
-                msg.payload.should.be.approximately(56548.67, 0.1 );
+                msg.payload.should.be.approximately(6870.66, 0.1 );
                 done();
             } catch(err) {
                 done(err);
@@ -143,9 +143,9 @@ describe('cistern Node', function () {
     });
   });
 
-  it('should return correct liters when input is in cm', function (done) {
+  it('should return correct liters on array', function (done) {
     var flow = [
-       { id: "n1", type: "cistern", radius: "3", maxDistance: "4", minDistance: "1", unit_input: "cm", wires:[["resultLiter"]] },
+       { id: "n1", type: "cistern", radius: "1.35", maxDistance: "3.2", minDistance: "1", unit_input: "m", wires:[["resultLiter"]] },
        { id: "resultLiter", type: "helper",  },
     ];
     helper.load(cistern, flow, function () {
@@ -153,7 +153,30 @@ describe('cistern Node', function () {
         var result = helper.getNode("resultLiter");
         result.on("input", function (msg) {
             try {
-                msg.payload.should.be.approximately(56548.67, 0.1 );
+                msg.payload[0].should.be.approximately(6870.66, 0.1 );
+                msg.payload[1].should.be.approximately(4007.89, 0.1 );
+                done();
+            } catch(err) {
+                done(err);
+            }
+        });
+        var n1 = helper.getNode("n1");
+        n1.receive({ payload: ["2", "2.5"] });
+        n1.error.should.not.be.called();
+    });
+  });
+
+  it('should return correct liters when input is in cm', function (done) {
+    var flow = [
+       { id: "n1", type: "cistern", radius: "1.35", maxDistance: "3.2", minDistance: "1", unit_input: "cm", wires:[["resultLiter"]] },
+       { id: "resultLiter", type: "helper",  },
+    ];
+    helper.load(cistern, flow, function () {
+
+        var result = helper.getNode("resultLiter");
+        result.on("input", function (msg) {
+            try {
+                msg.payload.should.be.approximately(6870.66, 0.1 );
                 done();
             } catch(err) {
                 done(err);
@@ -167,7 +190,7 @@ describe('cistern Node', function () {
 
   it('should return correct liters when input is in mm', function (done) {
     var flow = [
-       { id: "n1", type: "cistern", radius: "3", maxDistance: "4", minDistance: "1", unit_input: "mm", wires:[["resultLiter"]] },
+       { id: "n1", type: "cistern", radius: "1.35", maxDistance: "3.2", minDistance: "1", unit_input: "mm", wires:[["resultLiter"]] },
        { id: "resultLiter", type: "helper",  },
     ];
     helper.load(cistern, flow, function () {
@@ -175,7 +198,7 @@ describe('cistern Node', function () {
         var result = helper.getNode("resultLiter");
         result.on("input", function (msg) {
             try {
-                msg.payload.should.be.approximately(56548.67, 0.1 );
+                msg.payload.should.be.approximately(6870.66, 0.1 );
                 done();
             } catch(err) {
                 done(err);
@@ -189,7 +212,7 @@ describe('cistern Node', function () {
 
   it('should return correct liters when input is in inch', function (done) {
     var flow = [
-       { id: "n1", type: "cistern", radius: "3", maxDistance: "4", minDistance: "1", unit_input: "inch", wires:[["resultLiter"]] },
+       { id: "n1", type: "cistern", radius: "1.35", maxDistance: "3.2", minDistance: "1", unit_input: "inch", wires:[["resultLiter"]] },
        { id: "resultLiter", type: "helper",  },
     ];
     helper.load(cistern, flow, function () {
@@ -197,7 +220,7 @@ describe('cistern Node', function () {
         var result = helper.getNode("resultLiter");
         result.on("input", function (msg) {
             try {
-                msg.payload.should.be.approximately(56548.67, 0.1 );
+                msg.payload.should.be.approximately(6870.66, 0.1 );
                 done();
             } catch(err) {
                 done(err);
@@ -211,7 +234,7 @@ describe('cistern Node', function () {
 
   it('should return correct percentage', function (done) {
     var flow = [
-       { id: "n1", type: "cistern", radius: "3", maxDistance: "4", minDistance: "1", unit_input: "m", wires:[[], ["resultPercentage"]] },
+       { id: "n1", type: "cistern", radius: "1.35", maxDistance: "3.2", minDistance: "1", unit_input: "m", wires:[[], ["resultPercentage"]] },
        { id: "resultPercentage", type: "helper",  },
     ];
     helper.load(cistern, flow, function () {
@@ -219,7 +242,7 @@ describe('cistern Node', function () {
         var result = helper.getNode("resultPercentage");
         result.on("input", function (msg) {
             try {
-                msg.payload.should.be.approximately(0,666, 0.001 );
+                msg.payload.should.be.approximately(0.5454, 0.001 );
                 done();
             } catch(err) {
                 done(err);
