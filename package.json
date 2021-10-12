@@ -1,6 +1,6 @@
 {
     "name": "node-red-contrib-cistern",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "author": "cpetry",
     "repository": "git://github.com/cpetry/node-red-contrib-cistern.git",
     "description": "A collection of node-red nodes for cisterns.",
@@ -20,7 +20,8 @@
     },
     "node-red": {
         "nodes": {
-            "outlier": "outlier/outlier.js"
+            "outlier": "outlier/outlier.js",
+            "cistern": "cistern/cistern.js"
         },
         "dependencies": [
             "node-red-contrib-statistics"

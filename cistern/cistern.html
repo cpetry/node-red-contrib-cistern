@@ -1,0 +1,64 @@
+<script type="text/javascript">
+    RED.nodes.registerType('cistern',{
+        category: 'cistern',
+        color: '#a6bbcf',
+        defaults: {
+            name         : { value: ""},
+            unit_input   : { value: "cm", required: true },
+            radius       : { value: "", required: true, validate: function(v) { return v > 0; }},
+            maxDistance  : { value: "", required: true, validate: function(v) { return v > 0; }},
+            minDistance  : { value: "", required: true, validate: function(v) { return v > 0; }},
+        },
+        inputs:1,
+        outputs:2,
+        inputLabels: "distance",
+        outputLabels: ["liters","percentage"],
+        icon: "function.svg",
+        label: function() {
+            return this.name||"cistern";
+        },
+        oneditprepare: function()
+        {
+            $("#node-input-unit_input").typedInput({
+                types: [
+                    {
+                        value: "Input unit",
+                        options: [
+                            { value: "mm", label: "mm"},
+                            { value: "cm",    label: "cm"},
+                            { value: "m",    label: "m"},
+                            { value: "inch",    label: "inch"},
+                        ]
+                    }
+                ]
+            })
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="cistern">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-unit_input"><i class="fa fa-tag"></i> Input unit</label>
+        <input type="text" id="node-input-unit_input">
+    </div>
+    <div class="form-row">
+        <label for="node-input-radius"><i class="fa fa-tag"></i> Cone radius (m)</label>
+        <input type="text" id="node-input-radius" placeholder="in meter">
+    </div>
+    <div class="form-row">
+        <label for="node-input-minDistance"><i class="fa fa-tag"></i> Minimum distance (m)</label>
+        <input type="text" id="node-input-minDistance" placeholder="in meter">
+    </div>
+    <div class="form-row">
+        <label for="node-input-maxDistance"><i class="fa fa-tag"></i> Maximum distance (m)</label>
+        <input type="text" id="node-input-maxDistance" placeholder="in meter">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="cistern">
+    <p>A node for getting fill volume in liter and percentage of a cistern</p>
+</script>
