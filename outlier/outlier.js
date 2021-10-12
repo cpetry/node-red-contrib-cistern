@@ -7,6 +7,7 @@ module.exports = function(RED) {
         this.mode_input = config.mode_input;
         this.mode_outlier = config.mode_outlier;
         this.mode_output = config.mode_output;
+        this.block_on_too_many_outliers = config.block_on_too_many_outliers;
         var node = this;
 
         this.on('close', function() {
@@ -31,7 +32,12 @@ module.exports = function(RED) {
                     node.setError("Error filtering outliers. No value left!");
                     return;
                 }
-                node.setOutput(msg, filteredArray, node.mode_output);
+
+                if (filteredArray.length < 0.75 * valueArray.length && node.block_on_too_many_outliers)
+                    node.setError("Too many outliers. Less than 75% of values left!");
+                else 
+                    node.setOutput(msg, filteredArray, node.mode_output);
+                    
                 valueArray = new Array(0);
             }
 

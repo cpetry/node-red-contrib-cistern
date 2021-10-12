@@ -13,6 +13,7 @@
             },
             mode_outlier           : { value: "remove", required: true},
             mode_output            : { value: "mean", required: true},
+            block_on_too_many_outliers  : { value: false, required: true},
         },
         inputs:1,
         outputs:1,
@@ -61,6 +62,9 @@
                     }
                 ]
             })
+            $("#node-input-block_on_too_many_outliers").typedInput({
+                type: 'bool'
+            })
         }
     });
 </script>
@@ -86,6 +90,10 @@
     <div class="form-row">
         <label for="node-input-mode_output"><i class="fa fa-tag"></i> Output</label>
         <input type="text" id="node-input-mode_output">
+    </div>
+    <div class="form-row">
+        <label for="node-input-block_on_too_many_outliers"><i class="fa fa-tag"></i> Block on too many outliers</label>
+        <input type="text" id="node-input-block_on_too_many_outliers">
     </div>
     
 </script>
