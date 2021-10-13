@@ -7,7 +7,7 @@ module.exports = function(RED) {
         this.mode_input = config.mode_input;
         this.mode_outlier = config.mode_outlier;
         this.mode_output = config.mode_output;
-        this.block_on_too_many_outliers = config.block_on_too_many_outliers;
+        this.max_allowed_outlier_percentage = config.max_allowed_outlier_percentage;
         var node = this;
 
         this.on('close', function() {
@@ -33,8 +33,12 @@ module.exports = function(RED) {
                     return;
                 }
 
-                if (filteredArray.length < 0.75 * valueArray.length && node.block_on_too_many_outliers)
-                    node.setError("Too many outliers. Less than 75% of values left!");
+                var minLength = (1.0 - node.max_allowed_outlier_percentage) * valueArray.length;
+                var maxLength = node.max_allowed_outlier_percentage * valueArray.length;
+                var tooManyOutliers = (filteredArray.length < minLength && node.mode_outlier == "remove")
+                    || (filteredArray.length > maxLength && node.mode_outlier == "get")
+                if (tooManyOutliers)
+                    node.setError("Too many outliers! " + (node.max_allowed_outlier_percentage * 100) + "%!");
                 else 
                     node.setOutput(msg, filteredArray, node.mode_output);
                     
@@ -156,8 +160,8 @@ module.exports = function(RED) {
 
         node.setOutput = function(msg, valueArray, mode)
         {
-            if (mode == "mean"){
-                var value = simpleStatistics.mean(valueArray);
+            if (mode == "median"){
+                var value = simpleStatistics.median(valueArray);
                 msg.payload = value;
             }
             else if (mode == "array"){
@@ -172,8 +176,8 @@ module.exports = function(RED) {
             if (node.mode_input == "batch_number"){
                 outputText = valueArray.length + "/" + node.numberOfSamples;
                 if (valueArray.length == 0){
-                    if (node.mode_output == "mean")
-                        outputText = "Mean: " + msg.payload;
+                    if (node.mode_output == "median")
+                        outputText = "Median: " + msg.payload;
                     else if (node.mode_output == "array")
                         outputText = "Output length: " + msg.payload.length;
                 }

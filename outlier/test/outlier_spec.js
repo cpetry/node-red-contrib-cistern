@@ -31,7 +31,7 @@ describe('outlier Node', function () {
 
   it('should show error when input is null', function (done) {
     var flow = [
-       { id: "n1", type: "outlier", numberOfSamples: "5", mode_input: "batch_number", mode_outlier: "remove", mode_output: "mean", wires:[["result"]] },
+       { id: "n1", type: "outlier", numberOfSamples: "5", mode_input: "batch_number", mode_outlier: "remove", mode_output: "median", max_allowed_outlier_percentage: "0.1", wires:[["result"]] },
        { id: "result", type: "helper",  },
     ];
     helper.load(outlier, flow, function () {
@@ -47,7 +47,7 @@ describe('outlier Node', function () {
 
   it('should show error when input is has no payload', function (done) {
     var flow = [
-       { id: "n1", type: "outlier", numberOfSamples: "5", mode_input: "batch_number", mode_outlier: "remove", mode_output: "mean", wires:[["result"]] },
+       { id: "n1", type: "outlier", numberOfSamples: "5", mode_input: "batch_number", mode_outlier: "remove", mode_output: "median", max_allowed_outlier_percentage: "0.1", wires:[["result"]] },
        { id: "result", type: "helper",  },
     ];
     helper.load(outlier, flow, function () {
@@ -62,7 +62,7 @@ describe('outlier Node', function () {
 
   it('should show error when input is not a number', function (done) {
     var flow = [
-       { id: "n1", type: "outlier", numberOfSamples: "5", mode_input: "batch_number", mode_outlier: "remove", mode_output: "mean", wires:[["result"]] },
+       { id: "n1", type: "outlier", numberOfSamples: "5", mode_input: "batch_number", mode_outlier: "remove", mode_output: "median", max_allowed_outlier_percentage: "0.1", wires:[["result"]] },
        { id: "result", type: "helper",  },
     ];
     helper.load(outlier, flow, function () {
@@ -77,7 +77,7 @@ describe('outlier Node', function () {
   
   it('should get nothing when receive is below numberOfSamples', function (done) {
     var flow = [
-       { id: "n1", type: "outlier", numberOfSamples: "5", mode_input: "batch_number", mode_outlier: "remove", mode_output: "mean", wires:[["result"]] },
+       { id: "n1", type: "outlier", numberOfSamples: "5", mode_input: "batch_number", mode_outlier: "remove", mode_output: "median", max_allowed_outlier_percentage: "0.1", wires:[["result"]] },
        { id: "result", type: "helper",  },
     ];
     helper.load(outlier, flow, function () {
@@ -97,7 +97,7 @@ describe('outlier Node', function () {
 
   it('should clear array when numberOfSamples reached', function (done) {
     var flow = [
-       { id: "n1", type: "outlier", numberOfSamples: "5", mode_input: "batch_number", mode_outlier: "remove", mode_output: "mean", wires:[["result"]] },
+       { id: "n1", type: "outlier", numberOfSamples: "5", mode_input: "batch_number", mode_outlier: "remove", mode_output: "median", max_allowed_outlier_percentage: "0.1", wires:[["result"]] },
        { id: "result", type: "helper",  },
     ];
     helper.load(outlier, flow, function () {
@@ -118,9 +118,9 @@ describe('outlier Node', function () {
     });
   });
 
-  it('should get mean of array when mode_input is batch and mode_output is mean', function (done) {
+  it('should get median of array when mode_input is batch and mode_output is median', function (done) {
     var flow = [
-       { id: "n1", type: "outlier", numberOfSamples: "8", mode_input: "batch_number", mode_outlier: "remove", mode_output: "mean", wires:[["result"]] },
+       { id: "n1", type: "outlier", numberOfSamples: "8", mode_input: "batch_number", mode_outlier: "remove", mode_output: "median", max_allowed_outlier_percentage: 0.1, wires:[["result"]] },
        { id: "result", type: "helper",  },
     ];
     helper.load(outlier, flow, function () {
@@ -150,7 +150,7 @@ describe('outlier Node', function () {
 
   it('should get filtered array of input when mode_input is batch and mode_output is array', function (done) {
     var flow = [
-       { id: "n1", type: "outlier", numberOfSamples: "8", mode_input: "batch_number", mode_outlier: "remove", mode_output: "array", wires:[["result"]] },
+       { id: "n1", type: "outlier", numberOfSamples: "8", mode_input: "batch_number", mode_outlier: "remove", mode_output: "array", max_allowed_outlier_percentage: "0.1", wires:[["result"]] },
        { id: "result", type: "helper",  },
     ];
     helper.load(outlier, flow, function () {
@@ -180,7 +180,7 @@ describe('outlier Node', function () {
 
   it('should get mean of array when mode_input is string array', function (done) {
     var flow = [
-       { id: "n1", type: "outlier", mode_input: "array", mode_outlier: "remove", mode_output: "mean", wires:[["result"]] },
+       { id: "n1", type: "outlier", mode_input: "array", mode_outlier: "remove", mode_output: "median", max_allowed_outlier_percentage: "0.1", wires:[["result"]] },
        { id: "result", type: "helper",  },
     ];
     helper.load(outlier, flow, function () {
@@ -203,7 +203,7 @@ describe('outlier Node', function () {
 
   it('should get mean of array when mode_input is number array', function (done) {
     var flow = [
-       { id: "n1", type: "outlier", mode_input: "array", mode_outlier: "remove", mode_output: "mean", wires:[["result"]] },
+       { id: "n1", type: "outlier", mode_input: "array", mode_outlier: "remove", mode_output: "median", max_allowed_outlier_percentage: "0.1", wires:[["result"]] },
        { id: "result", type: "helper",  },
     ];
     helper.load(outlier, flow, function () {
@@ -226,7 +226,7 @@ describe('outlier Node', function () {
 
   it('should get filtered array of input when mode_input is array, and mode_outlier is remove and mode_output is array', function (done) {
     var flow = [
-       { id: "n1", type: "outlier", mode_input: "array", mode_outlier: "remove", mode_output: "array", wires:[["result"]] },
+       { id: "n1", type: "outlier", mode_input: "array", mode_outlier: "remove", mode_output: "array", max_allowed_outlier_percentage: "0.2", wires:[["result"]] },
        { id: "result", type: "helper",  },
     ];
     helper.load(outlier, flow, function () {
@@ -234,7 +234,7 @@ describe('outlier Node', function () {
         var resultNode = helper.getNode("result");
         resultNode.on("input", function (msg) {
             try {
-                msg.should.have.property('payload', [1, 3, 4, 2, 7, 5, 8, 6] );
+                msg.should.have.property('payload', [1, 2, 5, 4, 7, 8, 3, 4, 2, 7, 5, 8, 6] );
                 done();
             } catch(err) {
                 done(err);
@@ -242,14 +242,14 @@ describe('outlier Node', function () {
         });
         
         var n1 = helper.getNode("n1");
-        n1.receive({ payload: [1, 3, 22, 4, 2, 7, 5, -55, 8, 6] });
+        n1.receive({ payload: [1, 2, 5, 4, 7, 8, 3, 22, 4, 2, 7, 5, -55, 8, 6] });
         n1.warn.should.not.be.called();
     });
   });
 
   it('should get filtered array of input when mode_input is array and mode_outlier is get and mode_output is array', function (done) {
     var flow = [
-       { id: "n1", type: "outlier", mode_input: "array", mode_outlier: "get", mode_output: "array", wires:[["result"]] },
+       { id: "n1", type: "outlier", mode_input: "array", mode_outlier: "get", mode_output: "array", max_allowed_outlier_percentage: "0.2", wires:[["result"]] },
        { id: "result", type: "helper",  },
     ];
     helper.load(outlier, flow, function () {
@@ -265,19 +265,34 @@ describe('outlier Node', function () {
         });
         
         var n1 = helper.getNode("n1");
-        n1.receive({ payload: [1, 3, 22, 4, 2, 7, 5, -55, 8, 6] });
+        n1.receive({ payload: [1, 2, 5, 4, 7, 8, 3, 22, 4, 2, 7, 5, -55, 8, 6] });
         n1.warn.should.not.be.called();
     });
   });
 
   it('should show error when input array is empty', function (done) {
     var flow = [
-       { id: "n1", type: "outlier", mode_input: "array", mode_outlier: "remove", mode_output: "mean", wires:[["result"]] },
+       { id: "n1", type: "outlier", mode_input: "array", mode_outlier: "remove", mode_output: "median", wires:[["result"]] },
        { id: "result", type: "helper",  },
     ];
     helper.load(outlier, flow, function () {
         var n1 = helper.getNode("n1");
         n1.receive({ payload: [] });
+        n1.warn.should.be.called();
+        done();
+    });
+  });
+
+  it('should not output when max allowed outlier reached', function (done) {
+    var flow = [
+       { id: "n1", type: "outlier", mode_input: "array", mode_outlier: "remove", mode_output: "median", max_allowed_outlier_percentage: "0.1", wires:[["result"]] },
+       { id: "result", type: "helper",  },
+    ];
+    helper.load(outlier, flow, function () {
+        var resultNode = helper.getNode("result");
+        var n1 = helper.getNode("n1");
+        n1.receive({ payload: [1, 3, -22, 4, 2, 7, 5, -55, 8, 6] });
+        resultNode.should.not.have.called("input");
         n1.warn.should.be.called();
         done();
     });

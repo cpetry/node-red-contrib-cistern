@@ -12,8 +12,12 @@
                 } 
             },
             mode_outlier           : { value: "remove", required: true},
-            mode_output            : { value: "mean", required: true},
-            block_on_too_many_outliers  : { value: false, required: true},
+            mode_output            : { value: "median", required: true},
+            max_allowed_outlier_percentage  : { value: 0.1, required: true, validate:function(v) 
+                {
+                    return v >= 0 && v < 1;
+                } 
+            },
         },
         inputs:1,
         outputs:1,
@@ -56,14 +60,11 @@
                     {
                         value: "Output type",
                         options: [
-                            { value: "mean", label: "Mean"},
+                            { value: "median", label: "Median"},
                             { value: "array", label: "Array"},
                         ]
                     }
                 ]
-            })
-            $("#node-input-block_on_too_many_outliers").typedInput({
-                type: 'bool'
             })
         }
     });
@@ -84,6 +85,9 @@
         <input type="hidden" id="node-input-numberOfSamples-type">
     </div>
     <div class="form-row">
+        <img src="resources/node-red-contrib-cistern/outlier.png" />
+    </div>
+    <div class="form-row">
         <label for="node-input-mode_outlier"><i class="fa fa-tag"></i> Outlier</label>
         <input type="text" id="node-input-mode_outlier">
     </div>
@@ -92,12 +96,11 @@
         <input type="text" id="node-input-mode_output">
     </div>
     <div class="form-row">
-        <label for="node-input-block_on_too_many_outliers"><i class="fa fa-tag"></i> Block on too many outliers</label>
-        <input type="text" id="node-input-block_on_too_many_outliers">
+        <label for="node-input-max_allowed_outlier_percentage"><i class="fa fa-tag"></i> Maximum allowed outlier percentage (0-1)</label>
+        <input type="text" id="node-input-max_allowed_outlier_percentage">
     </div>
     
 </script>
-
-<script type="text/html" data-help-name="outlier">
-    <p>Fetches a number of value samples, detects outliers (1.5 times the 'interquartileRange') and returns a result of the remaining samples</p>
+<script type="text/markdown" data-help-name="outlier">
+    Fetches a number of value samples, detects outliers (1.5 times the 'interquartileRange') and returns a result of the remaining samples
 </script>
