@@ -31,6 +31,7 @@ A node for easy calculation of liters and percentage in a cylindrical cistern.
 
 ![](resources/cistern.png)
 
+- Radius: radius of the cylindrical cistern.
 - Input: measured distance from top to water level.
 - maxDistance: distance from top to bottom of the cistern.
 - minDistance: distance from top to max water level.
