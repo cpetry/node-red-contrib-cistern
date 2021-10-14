@@ -297,4 +297,25 @@ describe('outlier Node', function () {
         done();
     });
   });
+
+  it('should output when max allowed outlier not reached', function (done) {
+    var flow = [
+       { id: "n1", type: "outlier", mode_input: "array", mode_outlier: "remove", mode_output: "median", max_allowed_outlier_percentage: "0.1", wires:[["result"]] },
+       { id: "result", type: "helper",  },
+    ];
+    helper.load(outlier, flow, function () {
+        var resultNode = helper.getNode("result");
+        resultNode.on("input", function (msg) {
+            try {
+                msg.should.have.property('payload');
+                done();
+            } catch(err) {
+                done(err);
+            }
+        });
+        var n1 = helper.getNode("n1");
+        n1.receive({ payload: [132, 135, 132, 131, 131.1, 132.2, 133.4, 132, 135, 132, 131, 131.1, 132.2, 133.4, 132, 135, 132, 131, 131.1, 132.2, 133.4, 132, 135, 132, 131, 131.1, 132.2, 133.4, 132, 135, 132, 131, 131.1, 132.2, 133.4, 132, 135, 132, 131, 131.1, 132.2, 133.4] });
+        n1.warn.should.not.be.called();
+    });
+  });
 });
