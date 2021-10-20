@@ -25,6 +25,9 @@ Afterwards the node awaits again **numberOfSamples** or an array.
 - Median: Median value of the remaining values is given as output
 - Array: The filtered values are passed on.
 
+#### Max interquartile range
+Maximum range between 1st quartile and 3rd quartile to be allowed for a valid output. In case the range is wider than defined here: No output is passed on.
+
 
 ## Node - Cistern
 A node for easy calculation of liters and percentage in a cylindrical cistern.

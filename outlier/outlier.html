@@ -13,9 +13,9 @@
             },
             mode_outlier           : { value: "remove", required: true},
             mode_output            : { value: "median", required: true},
-            max_allowed_outlier_percentage  : { value: '0.1', required: true, validate:function(v) 
+            max_interquartile_range  : { value: '2', required: true, validate:function(v) 
                 {
-                    return v >= 0 && v < 1;
+                    return v >= 0;
                 } 
             },
         },
@@ -96,8 +96,8 @@
         <input type="text" id="node-input-mode_output">
     </div>
     <div class="form-row">
-        <label for="node-input-max_allowed_outlier_percentage"><i class="fa fa-tag"></i> Maximum allowed outlier percentage (0-1)</label>
-        <input type="text" id="node-input-max_allowed_outlier_percentage">
+        <label for="node-input-max_interquartile_range"><i class="fa fa-tag"></i> Maximum allowed interquartile range</label>
+        <input type="text" id="node-input-max_interquartile_range">
     </div>
     
 </script>

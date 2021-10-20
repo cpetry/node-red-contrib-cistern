@@ -7,7 +7,7 @@ module.exports = function(RED) {
         this.mode_input = config.mode_input;
         this.mode_outlier = config.mode_outlier;
         this.mode_output = config.mode_output;
-        this.max_allowed_outlier_percentage = config.max_allowed_outlier_percentage;
+        this.max_interquartile_range = config.max_interquartile_range;
         var node = this;
 
         this.on('close', function() {
@@ -26,19 +26,19 @@ module.exports = function(RED) {
             
             if (node.mode_input == "array" || valueArray.length >= node.numberOfSamples)
             {
-                var filteredArray = node.filterOutliers(valueArray, node.mode_outlier);
+                // https://mathworld.wolfram.com/Outlier.html
+                // max allowed distance is 1.5 times the interquartileRange above third quartile or below first quartile
+                var interquartileRange = simpleStatistics.interquartileRange(valueArray);
+                console.log("interquartile range: " + interquartileRange);
+                var filteredArray = node.filterOutliers(valueArray, interquartileRange, node.mode_outlier);
                 if (filteredArray.length == 0)
                 {
                     node.setError("Error filtering outliers. No value left!");
                     return;
                 }
 
-                var minLength = (1.0 - node.max_allowed_outlier_percentage) * valueArray.length;
-                var maxLength = node.max_allowed_outlier_percentage * valueArray.length;
-                var tooManyOutliers = (filteredArray.length < minLength && node.mode_outlier == "remove")
-                    || (filteredArray.length > maxLength && node.mode_outlier == "get")
-                if (tooManyOutliers)
-                    node.setError("Too many outliers! " + (node.max_allowed_outlier_percentage * 100) + "%!");
+                if (interquartileRange > node.max_interquartile_range)
+                    node.setError("Interquartile range is higher than max_interquartile_range! " + interquartileRange + " > " + node.max_interquartile_range + " !");
                 else 
                     node.setOutput(msg, filteredArray, node.mode_output);
                     
@@ -131,14 +131,12 @@ module.exports = function(RED) {
             context.set('valueArray',valueArray);
         };
 
-        node.filterOutliers = function(valueArray, mode)
+        node.filterOutliers = function(valueArray, interquartileRange, mode)
         {
             // simple median
             var median = simpleStatistics.median(valueArray);
 
-            // https://mathworld.wolfram.com/Outlier.html
-            // max allowed distance is 1.5 times the interquartileRange above third quartile or below first quartile
-            var maxAllowedDistance = 1.5 * simpleStatistics.interquartileRange(valueArray);
+            var maxAllowedDistance = 1.5 * interquartileRange;
             var firstQuartile = simpleStatistics.quantile(valueArray, 0.25);
             var thirdQuartile = simpleStatistics.quantile(valueArray, 0.75);
             if (mode == "remove")
