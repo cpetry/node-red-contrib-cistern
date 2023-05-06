@@ -29,7 +29,7 @@ module.exports = function(RED) {
                 // https://mathworld.wolfram.com/Outlier.html
                 // max allowed distance is 1.5 times the interquartileRange above third quartile or below first quartile
                 var interquartileRange = simpleStatistics.interquartileRange(valueArray);
-                console.log("interquartile range: " + interquartileRange);
+                //console.log("interquartile range: " + interquartileRange);
                 var filteredArray = node.filterOutliers(valueArray, interquartileRange, node.mode_outlier);
                 if (filteredArray.length == 0)
                 {
@@ -141,11 +141,15 @@ module.exports = function(RED) {
             var thirdQuartile = simpleStatistics.quantile(valueArray, 0.75);
             if (mode == "remove")
             {
+                if (interquartileRange == 0)
+                    return valueArray;
                 var filteredArray = valueArray.filter(x => (x < thirdQuartile + maxAllowedDistance) && (x > firstQuartile - maxAllowedDistance));
                 return filteredArray;
             }
             else if (mode == "get")
             {
+                if (interquartileRange == 0)
+                    return new Array(0);
                 var filteredArray = valueArray.filter(x => (x > thirdQuartile + maxAllowedDistance) || (x < firstQuartile - maxAllowedDistance));
                 return filteredArray;
             }
