@@ -22,7 +22,9 @@ Afterwards the node awaits again **numberOfSamples** or an array.
 - Get: Outliers only are passed on.
 
 #### Output mode
-- Median: Median value of the remaining values is given as output
+- Median: Median value of the remaining values is given as output: (1 1 2 8) -> 3
+- Mean: Mean value of remaining values: (1 1 2 8) -> 1.5
+- Mode: Mode value of remaining values: (1 1 2 8) -> 2
 - Array: The filtered values are passed on.
 
 #### Max interquartile range

@@ -1,6 +1,6 @@
 {
     "name": "node-red-contrib-cistern",
-    "version": "1.0.7",
+    "version": "1.0.9",
     "author": "cpetry",
     "repository": "git://github.com/cpetry/node-red-contrib-cistern.git",
     "description": "A collection of node-red nodes for cisterns.",
@@ -16,7 +16,7 @@
         "registry": "https://registry.npmjs.com/"
     },
     "scripts": {
-        "test": "mocha \"*/test/**/*_spec.js\""
+        "test": "mocha \"*/test/**/*.test.js\""
     },
     "node-red": {
         "nodes": {
@@ -28,7 +28,8 @@
         ]
     },
     "devDependencies": {
-        "node-red": "^2.0.6",
-        "node-red-node-test-helper": "^0.2.7"
+        "jest": "^29.5.0",
+        "node-red": "^3.0.2",
+        "node-red-node-test-helper": "^0.3.1"
     }
 }

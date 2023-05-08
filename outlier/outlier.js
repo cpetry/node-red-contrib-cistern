@@ -133,9 +133,6 @@ module.exports = function(RED) {
 
         node.filterOutliers = function(valueArray, interquartileRange, mode)
         {
-            // simple median
-            var median = simpleStatistics.median(valueArray);
-
             var maxAllowedDistance = 1.5 * interquartileRange;
             var firstQuartile = simpleStatistics.quantile(valueArray, 0.25);
             var thirdQuartile = simpleStatistics.quantile(valueArray, 0.75);
@@ -166,6 +163,14 @@ module.exports = function(RED) {
                 var value = simpleStatistics.median(valueArray);
                 msg.payload = value;
             }
+            else if (mode == "mean"){
+                var value = simpleStatistics.mean(valueArray);
+                msg.payload = value;
+            }
+            else if (mode == "mode"){
+                var value = simpleStatistics.mode(valueArray);
+                msg.payload = value;
+            }
             else if (mode == "array"){
                 msg.payload = valueArray;
             }
@@ -180,6 +185,10 @@ module.exports = function(RED) {
                 if (valueArray.length == 0){
                     if (node.mode_output == "median")
                         outputText = "Median: " + msg.payload;
+                    else if (node.mode_output == "mean")
+                            outputText = "Mean: " + msg.payload;
+                    else if (node.mode_output == "mode")
+                            outputText = "Mode: " + msg.payload;
                     else if (node.mode_output == "array")
                         outputText = "Output length: " + msg.payload.length;
                 }

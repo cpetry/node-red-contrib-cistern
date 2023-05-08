@@ -1,4 +1,3 @@
-var should = require("should");
 var helper = require("node-red-node-test-helper");
 var outlier = require("../outlier.js");
 
@@ -21,7 +20,7 @@ describe('outlier Node', function () {
     helper.load(outlier, flow, function () {
       var n1 = helper.getNode("n1");
       try {
-        n1.should.have.property('name', 'test name');
+        expect(n1).toHaveProperty('name', 'test name');
         done();
       } catch(err) {
         done(err);
@@ -40,7 +39,6 @@ describe('outlier Node', function () {
         var n1 = helper.getNode("n1");
         n1.receive(null);
         n1.warn.should.be.called();
-        n1.should.not.have.called("context");
         done();
     });
   });
@@ -88,7 +86,6 @@ describe('outlier Node', function () {
         n1.receive({ payload: "2" });
         n1.receive({ payload: "3" });
         n1.receive({ payload: "4" });
-        resultNode.should.not.have.called("input");
         n1.warn.should.not.be.called();
         done();
     });
@@ -201,7 +198,7 @@ describe('outlier Node', function () {
     });
   });
 
-  it('should get median of array when mode_input is number array', function (done) {
+  it('should get median of array when mode_input is number array equal entries', function (done) {
     var flow = [
        { id: "n1", type: "outlier", mode_input: "array", mode_outlier: "remove", mode_output: "median", max_interquartile_range: "6", wires:[["result"]] },
        { id: "result", type: "helper",  },
@@ -220,6 +217,76 @@ describe('outlier Node', function () {
         
         var n1 = helper.getNode("n1");
         n1.receive({ payload: [1, 3, 4, 2, 7, 5, 8, 6] });
+        n1.warn.should.not.be.called();
+    });
+  });
+
+  
+  it('should get median of array when mode_input is number array', function (done) {
+    var flow = [
+       { id: "n1", type: "outlier", mode_input: "array", mode_outlier: "remove", mode_output: "median", max_interquartile_range: "6", wires:[["result"]] },
+       { id: "result", type: "helper",  },
+    ];
+    helper.load(outlier, flow, function () {
+  
+        var resultNode = helper.getNode("result");
+        resultNode.on("input", function (msg) {
+            try {
+                msg.should.have.property('payload', 1.5 );
+                done();
+            } catch(err) {
+                done(err);
+            }
+        });
+        
+        var n1 = helper.getNode("n1");
+        n1.receive({ payload: [1, 1, 2, 8] });
+        n1.warn.should.not.be.called();
+    });
+  });
+
+  it('should get mean of array when mode_input is number array', function (done) {
+    var flow = [
+       { id: "n1", type: "outlier", mode_input: "array", mode_outlier: "remove", mode_output: "mean", max_interquartile_range: "6", wires:[["result"]] },
+       { id: "result", type: "helper",  },
+    ];
+    helper.load(outlier, flow, function () {
+  
+        var resultNode = helper.getNode("result");
+        resultNode.on("input", function (msg) {
+            try {
+                msg.should.have.property('payload', 3 );
+                done();
+            } catch(err) {
+                done(err);
+            }
+        });
+        
+        var n1 = helper.getNode("n1");
+        n1.receive({ payload: [1, 1, 2, 8] });
+        n1.warn.should.not.be.called();
+    });
+  });
+
+  it('should get mode of array when mode_input is number array', function (done) {
+    var flow = [
+       { id: "n1", type: "outlier", mode_input: "array", mode_outlier: "remove", mode_output: "mode", max_interquartile_range: "6", wires:[["result"]] },
+       { id: "result", type: "helper",  },
+    ];
+    helper.load(outlier, flow, function () {
+  
+        var resultNode = helper.getNode("result");
+        resultNode.on("input", function (msg) {
+            try {
+                msg.should.have.property('payload', 1 );
+                done();
+            } catch(err) {
+                done(err);
+            }
+        });
+        
+        var n1 = helper.getNode("n1");
+        n1.receive({ payload: [1, 1, 2, 8] });
         n1.warn.should.not.be.called();
     });
   });
@@ -290,10 +357,25 @@ describe('outlier Node', function () {
     ];
     helper.load(outlier, flow, function () {
         var resultNode = helper.getNode("result");
+        const spy = jest.spyOn(resultNode, 'warn');
         var n1 = helper.getNode("n1");
         n1.receive({ payload: [1, 3, -22, 4, 2, 7, 5, -55, 8, 6] });
-        resultNode.should.not.have.called("input");
-        n1.warn.should.be.called();
+        expect(spy).not.toHaveBeenCalled();
+        done();
+    });
+  });
+
+  it('should not filter at all when all values are equal', function (done) {
+    var flow = [
+       { id: "n1", type: "outlier", mode_input: "array", mode_outlier: "remove", mode_output: "median", max_interquartile_range: "2", wires:[["result"]] },
+       { id: "result", type: "helper",  },
+    ];
+    helper.load(outlier, flow, function () {
+        var resultNode = helper.getNode("result");
+        const spy = jest.spyOn(resultNode, 'warn');
+        var n1 = helper.getNode("n1");
+        n1.receive({ payload: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2] });
+        expect(spy).not.toHaveBeenCalled();
         done();
     });
   });

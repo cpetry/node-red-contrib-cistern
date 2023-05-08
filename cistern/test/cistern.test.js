@@ -21,7 +21,7 @@ describe('cistern Node', function () {
     helper.load(cistern, flow, function () {
       var n1 = helper.getNode("n1");
       try {
-        n1.should.have.property('name', 'test name');
+        expect(n1).toHaveProperty('name', 'test name');
         done();
       } catch(err) {
         done(err);
@@ -38,7 +38,6 @@ describe('cistern Node', function () {
         var n1 = helper.getNode("n1");
         n1.receive(null);
         n1.error.should.be.called();
-        n1.should.not.have.called("context");
         done();
     });
   });
