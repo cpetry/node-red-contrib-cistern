@@ -180,21 +180,18 @@ module.exports = function(RED) {
         node.setStatus = function(msg, valueArray)
         {
             var outputText = ""
-            if (node.mode_input == "batch_number"){
+            if (node.mode_input === "batch_number" && valueArray.length > 0)
                 outputText = valueArray.length + "/" + node.numberOfSamples;
-                if (valueArray.length == 0){
-                    if (node.mode_output == "median")
-                        outputText = "Median: " + msg.payload;
-                    else if (node.mode_output == "mean")
-                            outputText = "Mean: " + msg.payload;
-                    else if (node.mode_output == "mode")
-                            outputText = "Mode: " + msg.payload;
-                    else if (node.mode_output == "array")
-                        outputText = "Output length: " + msg.payload.length;
-                }
+            else if ((node.mode_input === "batch_number" && valueArray.length === 0) || node.mode_input === "array"){
+                if (node.mode_output === "median")
+                    outputText = "Median: " + msg.payload;
+                else if (node.mode_output === "mean")
+                    outputText = "Mean: " + msg.payload;
+                else if (node.mode_output === "mode")
+                    outputText = "Mode: " + msg.payload;
+                else if (node.mode_output === "array")
+                    outputText = "Output length: " + msg.payload.length;
             }
-            else if(node.mode_input == "array")
-                outputText = "Output length: " + msg.payload.length;
 
             node.status({fill:"green",shape:"ring", text: outputText});
         }
